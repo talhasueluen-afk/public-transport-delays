@@ -3,6 +3,11 @@
 A data science portfolio project analyzing and predicting public transport arrival delays
 using weather conditions, city events, and traffic-related features.
 
+> **Key finding:** Linear Regression failed to predict delays
+> (R² = -0.0157), suggesting that weather and event data alone
+> are insufficient — delays likely stem from operational factors
+> not captured in this dataset.
+
 ---
 
 ## Objective
@@ -66,7 +71,12 @@ Linear Regression was not sufficient for this problem.
 ```
 public-transport-delays/
 ├── README.md
+├── requirements.txt
 ├── public_transport_delays.ipynb   # EDA + Linear Regression model
+├── model.pkl                       # Saved trained model
+├── src/
+│   ├── preprocess.py               # Data loading and preprocessing
+│   └── train.py                    # Model training and evaluation
 └── data/
     └── public_transport_delays.csv
 ```
