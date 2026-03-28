@@ -1,49 +1,63 @@
 # Public Transport Delays — Predicting Delays with Weather & Events
 
-A data science portfolio project that analyzes and attempts to predict public transport
-delays using weather conditions, city events, and traffic-related features.
+A data science portfolio project analyzing and predicting public transport arrival delays
+using weather conditions, city events, and traffic-related features.
 
 ---
 
-## Project Overview
+## Objective
 
-This project explores whether external factors such as weather and city events can explain
-or predict public transport arrival delays. The analysis includes exploratory data analysis
-(EDA) and a Linear Regression model trained to predict `actual_arrival_delay_min`.
+Investigate whether external factors (weather, events, traffic) can explain or predict
+public transport arrival delays, using Exploratory Data Analysis and a Linear Regression model.
 
-**Key conclusion:** The selected features did not provide sufficient predictive power for
-a linear model — suggesting that delays in this dataset are not meaningfully explained
-by weather or event data alone.
+**Target variable:** `actual_arrival_delay_min` (continuous, in minutes)
 
 ---
 
-## Dataset
+## Methods
 
-| Property | Value |
-|----------|-------|
-| Source | Kaggle — khushikyad001/public-transport-delays-with-weather-and-events |
-| Rows | 2,000 |
-| Columns | 24 |
-| Missing values | `event_type`: 1,173 NaN (filled with `"No Event"`) |
+- **Data:** 2,000 trips, 24 features — Kaggle (khushikyad001/public-transport-delays-with-weather-and-events)
+- **Preprocessing:** Filled 1,173 missing `event_type` values with `"No Event"`, one-hot encoded categoricals (`weather_condition`, `season`, `transport_type`, `event_type`), dropped ID columns and leaky features
+- **Model:** `sklearn.linear_model.LinearRegression`, 80/20 train/test split (`random_state=42`)
+- **Evaluation:** MAE, MSE, R²
 
-### Key Columns
+---
 
-| Column | Description |
-|--------|-------------|
-| `actual_arrival_delay_min` | Arrival delay in minutes — model target |
-| `weather_condition` | Weather category at time of trip |
-| `temperature_C` | Temperature in Celsius |
-| `humidity_percent` | Humidity percentage |
-| `wind_speed_kmh` | Wind speed in km/h |
-| `precipitation_mm` | Precipitation in mm |
-| `event_type` | Type of city event (Sports, Concert, etc.) |
-| `event_attendance_est` | Estimated event attendance |
-| `traffic_congestion_index` | Traffic congestion score (0–99) |
-| `holiday` | Public holiday flag (0/1) |
-| `peak_hour` | Peak hour flag (0/1) |
-| `season` | Season of the year |
-| `transport_type` | Bus, Metro, or Tram |
-| `delayed` | Binary label — 1 if delayed (derived from target) |
+## Key Results
+
+**EDA**
+- 74.95% of trips were delayed — delays are the norm in this dataset
+- Weather condition had no significant impact — all categories showed similar delay rates (73–77%)
+- Event type had no significant impact — all categories showed similar delay rates (72–77%)
+- Arrival delays are broadly distributed between -3 and 29 minutes
+
+**Model**
+
+| Metric | Value |
+|--------|-------|
+| MAE (Mean Absolute Error) | **7.73 minutes** |
+| R² (R-squared) | **-0.0157** |
+
+The model predicted approximately 13–15 minutes for nearly every trip regardless of input,
+confirming that weather and event features carry almost no discriminative signal.
+Linear Regression was not sufficient for this problem.
+
+---
+
+## Limitations
+
+- Weather and event features show no meaningful variation in delay rates, making linear prediction ineffective
+- R² below zero indicates the model does not outperform a simple mean baseline
+- Likely causes of delays (vehicle condition, driver, route history) are not present in the dataset
+
+---
+
+## Next Improvements
+
+- Engineer time-based features from `date` and `time` columns
+- Try non-linear models (Random Forest, Gradient Boosting) to capture feature interactions
+- Investigate additional data sources (operational logs, route history)
+- Apply cross-validation for more robust evaluation
 
 ---
 
@@ -51,97 +65,30 @@ by weather or event data alone.
 
 ```
 public-transport-delays/
-├── claude.md                          # Project notes
-├── README.md                          # This file
-├── public transport delays.ipynb      # Main notebook: EDA + Linear Regression
+├── README.md
+├── public_transport_delays.ipynb   # EDA + Linear Regression model
 └── data/
-    └── public_transport_delays.csv    # Raw dataset
+    └── public_transport_delays.csv
 ```
 
 ---
 
-## EDA Findings
+## Technologies
 
-- **74.95% of trips were delayed** — delays are the norm rather than the exception in this dataset.
-- **Weather condition had no significant impact** — all weather categories showed similar delay rates, ranging narrowly between 73% and 77%.
-- **Event type had no significant impact** — delay rates across all event types (Sports, Concert, No Event, etc.) also fell within a similar range of 72–77%.
-- **Arrival delays are broadly distributed** between -3 and 29 minutes, with no strong concentration around a single value.
-
-These findings suggest that delays occur relatively uniformly across different weather and event conditions, making them difficult to predict from these features.
-
----
-
-## Linear Regression Model
-
-### Approach
-
-1. Filled missing `event_type` values with `"No Event"`
-2. One-hot encoded categorical features (`weather_condition`, `season`, `transport_type`, `event_type`)
-3. Dropped ID columns, raw time strings, and leaky features (`actual_departure_delay_min`, `delayed`)
-4. 80/20 train/test split (`random_state=42`)
-5. Trained `sklearn.linear_model.LinearRegression`
-
-### Results
-
-| Metric | Value |
-|--------|-------|
-| MAE (Mean Absolute Error) | **7.73 minutes** |
-| R² (R-squared) | **-0.0157** |
-
-### Interpretation
-
-The R² of **-0.0157** means the model performs worse than simply predicting the mean delay
-for every trip. In practice, the model predicted approximately 13–15 minutes for nearly all
-trips regardless of the input features — reflecting the finding from EDA that weather and
-event features carry almost no discriminative signal.
-
-The MAE of **7.73 minutes** is close to the dataset's natural spread, confirming that the
-model has not learned meaningful patterns beyond the overall average.
-
-**Linear Regression was not sufficient for this problem** given these features.
-
-### Possible Next Steps
-
-- Engineer time-based features from the `date` and `time` columns
-- Try non-linear models (Random Forest, Gradient Boosting) that can capture interactions
-- Investigate features not present in the dataset (vehicle condition, driver, route history)
-- Use cross-validation for more robust evaluation
-
----
-
-## Technologies Used
-
-| Library | Purpose |
-|---------|---------|
-| `pandas` | Data loading and manipulation |
-| `numpy` | Numerical operations |
-| `matplotlib` | Plotting and visualization |
-| `seaborn` | Statistical visualizations |
-| `scikit-learn` | Model training and evaluation |
-
-**Python version:** 3.x
-**Environment:** Jupyter Notebook
+`Python` · `pandas` · `numpy` · `matplotlib` · `seaborn` · `scikit-learn` · `Jupyter Notebook`
 
 ---
 
 ## How to Run
 
-1. **Clone or download** this repository.
+```bash
+pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+jupyter notebook
+```
 
-2. **Install dependencies:**
-   ```bash
-   pip install pandas numpy matplotlib seaborn scikit-learn jupyter
-   ```
+Open `public_transport_delays.ipynb` and run all cells top to bottom (`Kernel > Restart & Run All`).
 
-3. **Launch Jupyter Notebook:**
-   ```bash
-   jupyter notebook
-   ```
-
-4. **Open** `public transport delays.ipynb` and run all cells top to bottom
-   (`Kernel > Restart & Run All`).
-
-> Make sure the dataset is located at `data/public_transport_delays.csv` relative to the notebook.
+> Ensure the dataset is at `data/public_transport_delays.csv` relative to the notebook.
 
 ---
 
